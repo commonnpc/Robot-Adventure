@@ -12,44 +12,44 @@ class Sprite():
         self.Y = Y
         self.STANY = []
         if IDLE != None:
-            self.IDLEan = podziel_klatki(IDLE[0], IDLE[1],  3)
+            self.IDLEan = podziel_klatki(IDLE[0], IDLE[1],  2.5)
             self.STANY.append(self.IDLEan)
         if RUN != None:
-            self.RUNan = podziel_klatki(RUN[0], RUN[1],  3)
+            self.RUNan = podziel_klatki(RUN[0], RUN[1],  2.5)
             self.STANY.append(self.RUNan)
         if WALK != None:
-            self.WALKan = podziel_klatki(WALK[0], WALK[1],  3)
+            self.WALKan = podziel_klatki(WALK[0], WALK[1],  2.5)
             self.STANY.append(self.WALKan)
         if JUMP != None:
-            self.JUMPan = podziel_klatki(JUMP[0], JUMP[1],  3)
+            self.JUMPan = podziel_klatki(JUMP[0], JUMP[1],  2.5)
             self.STANY.append(self.JUMPan)
         self.prostokat = self.IDLEan[0].get_rect(topleft=(X, Y))
 
-    def rysuj(self, ANIMACJA, EKRAN):
+    def rysuj(self, ANIMACJA, EKRAN, kamera_x, kamera_y):
         if self.KIERUNEK == "PRAWO":
             if self.STATE == "IDLE":
-                EKRAN.blit(self.IDLEan[ANIMACJA], (self.X, self.Y))
+                EKRAN.blit(self.IDLEan[ANIMACJA], (self.X - kamera_x, self.Y - kamera_y))
             elif self.STATE == "RUN":
                 pass #################
             elif self.STATE == "WALK":
                 if ANIMACJA % 2 == 0:
-                    EKRAN.blit(self.WALKan[2 * ANIMACJA], (self.X, self.Y))
+                    EKRAN.blit(self.WALKan[2 * ANIMACJA], (self.X - kamera_x, self.Y - kamera_y))
                 else:
-                    EKRAN.blit(self.WALKan[2 * ANIMACJA + 1], (self.X, self.Y))
+                    EKRAN.blit(self.WALKan[2 * ANIMACJA + 1], (self.X - kamera_x, self.Y - kamera_y))
             elif self.STATE == "JUMP":
-                EKRAN.blit(self.JUMPan[ANIMACJA], (self.X, self.Y))
+                EKRAN.blit(self.JUMPan[ANIMACJA], (self.X - kamera_x, self.Y - kamera_y))
         else:
             if self.STATE == "IDLE":
-                EKRAN.blit((pygame.transform.flip(self.IDLEan[ANIMACJA], True, False)), (self.X, self.Y))
+                EKRAN.blit((pygame.transform.flip(self.IDLEan[ANIMACJA], True, False)), (self.X - kamera_x, self.Y - kamera_y))
             elif self.STATE == "RUN":
                 pass ################
             elif self.STATE == "WALK":
                 if ANIMACJA % 2 == 0:
-                    EKRAN.blit((pygame.transform.flip(self.WALKan[2 * ANIMACJA], True, False)), (self.X, self.Y))
+                    EKRAN.blit((pygame.transform.flip(self.WALKan[2 * ANIMACJA], True, False)), (self.X - kamera_x, self.Y - kamera_y))
                 else:
-                    EKRAN.blit((pygame.transform.flip(self.WALKan[2 * ANIMACJA + 1], True, False)), (self.X, self.Y))
+                    EKRAN.blit((pygame.transform.flip(self.WALKan[2 * ANIMACJA + 1], True, False)), (self.X - kamera_x, self.Y - kamera_y))
             elif self.STATE == "JUMP":
-                EKRAN.blit((pygame.transform.flip(self.JUMPan[ANIMACJA], True, False)), (self.X, self.Y))
+                EKRAN.blit((pygame.transform.flip(self.JUMPan[ANIMACJA], True, False)), (self.X - kamera_x, self.Y - kamera_y))
 
     def czy_dotyka_podloza(self):
         hitbox_testowy = self.prostokat.move(0, 1)
@@ -78,11 +78,31 @@ class Sprite():
         
 gracz = Sprite(100, 100, IDLE = (pygame.image.load(f"Phantom/assets/gracz/PLAYER-IDLE.png"), 5), WALK = (pygame.image.load(f"Phantom/assets/gracz/PLAYER-WALK.png"), 10), JUMP = (pygame.image.load(f"Phantom/assets/gracz/PLAYER-JUMP.png"), 5))
 
-for i in range(15):
-    obiekty_podloza.append(Sprite(60*i, 540, IDLE = (pygame.image.load(f"Phantom/assets/GRASS.png"), 5)))
-    prostokaty_podloza.append(obiekty_podloza[i].prostokat)
-obiekty_podloza.append(Sprite(60, 480, IDLE = (pygame.image.load(f"Phantom/assets/GRASS.png"), 5)))
-prostokaty_podloza.append(obiekty_podloza[-1].prostokat)
+mapa = open(f"Phantom/mapa.txt", "r").read()
+x = 0
+linia = 0
+a = 0
+for znak in mapa:
+    if znak == "G":
+        if mapa[a - len(mapa.splitlines()[0]) - 1] != "G" or x == 0:
+            obiekty_podloza.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/GRASS.png"), 5)))
+        else:
+            obiekty_podloza.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/DIRT.png"), 5)))
+        prostokaty_podloza.append(obiekty_podloza[-1].prostokat)
+    elif znak == "/":
+        linia += 1
+        x = a + 2
+    elif znak == "S":
+        obiekty_podloza.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/STONE.png"), 5)))
+        prostokaty_podloza.append(obiekty_podloza[-1].prostokat)
+    a += 1
+
+
+
+
+
+
+
     
 
 
