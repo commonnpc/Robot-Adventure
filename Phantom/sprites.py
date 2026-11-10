@@ -3,9 +3,13 @@ from arkusze_i_animacje import *
 
 obiekty_podloza = []
 prostokaty_podloza = []
+kolce = []
+energie = []
+monety = []
 
 class Sprite():
     def __init__(self, X, Y, IDLE = None, RUN = None, WALK = None, JUMP = None, STATE = "IDLE", KIERUNEK = "PRAWO"):
+        self.BEING = True
         self.STATE = STATE
         self.KIERUNEK = KIERUNEK
         self.X = X
@@ -29,27 +33,35 @@ class Sprite():
         if self.KIERUNEK == "PRAWO":
             if self.STATE == "IDLE":
                 EKRAN.blit(self.IDLEan[ANIMACJA], (self.X - kamera_x, self.Y - kamera_y))
+                self.mask = pygame.mask.from_surface(self.IDLEan[ANIMACJA])
             elif self.STATE == "RUN":
                 pass #################
             elif self.STATE == "WALK":
                 if ANIMACJA % 2 == 0:
                     EKRAN.blit(self.WALKan[2 * ANIMACJA], (self.X - kamera_x, self.Y - kamera_y))
+                    self.mask = pygame.mask.from_surface(self.WALKan[ANIMACJA * 2])
                 else:
                     EKRAN.blit(self.WALKan[2 * ANIMACJA + 1], (self.X - kamera_x, self.Y - kamera_y))
+                    self.mask = pygame.mask.from_surface(self.WALKan[2 * ANIMACJA + 1])
             elif self.STATE == "JUMP":
                 EKRAN.blit(self.JUMPan[ANIMACJA], (self.X - kamera_x, self.Y - kamera_y))
+                self.mask = pygame.mask.from_surface(self.JUMPan[ANIMACJA])
         else:
             if self.STATE == "IDLE":
                 EKRAN.blit((pygame.transform.flip(self.IDLEan[ANIMACJA], True, False)), (self.X - kamera_x, self.Y - kamera_y))
+                self.mask = pygame.mask.from_surface(pygame.transform.flip(self.IDLEan[ANIMACJA], True, False))
             elif self.STATE == "RUN":
                 pass ################
             elif self.STATE == "WALK":
                 if ANIMACJA % 2 == 0:
                     EKRAN.blit((pygame.transform.flip(self.WALKan[2 * ANIMACJA], True, False)), (self.X - kamera_x, self.Y - kamera_y))
+                    self.mask = pygame.mask.from_surface(pygame.transform.flip(self.WALKan[2 * ANIMACJA], True, False))
                 else:
                     EKRAN.blit((pygame.transform.flip(self.WALKan[2 * ANIMACJA + 1], True, False)), (self.X - kamera_x, self.Y - kamera_y))
+                    self.mask = pygame.mask.from_surface(pygame.transform.flip(self.WALKan[2 * ANIMACJA + 1], True, False))
             elif self.STATE == "JUMP":
                 EKRAN.blit((pygame.transform.flip(self.JUMPan[ANIMACJA], True, False)), (self.X - kamera_x, self.Y - kamera_y))
+                self.mask = pygame.mask.from_surface(pygame.transform.flip(self.JUMPan[ANIMACJA], True, False))
 
     def czy_dotyka_podloza(self):
         hitbox_testowy = self.prostokat.move(0, 1)
@@ -95,6 +107,12 @@ for znak in mapa:
     elif znak == "S":
         obiekty_podloza.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/STONE.png"), 5)))
         prostokaty_podloza.append(obiekty_podloza[-1].prostokat)
+    elif znak == "X":
+        kolce.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/SPIKE.png"), 5)))
+    elif znak == "E":
+        energie.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/ENERGY.png"), 4)))
+    elif znak == "M":
+        monety.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/MONEY.png"), 4)))
     a += 1
 
 
