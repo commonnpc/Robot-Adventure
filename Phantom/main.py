@@ -31,9 +31,9 @@ menu = False
 serca = 3
 ANIMACJA_ENERGIA = 0
 monety_liczba = 0
+SKOK = False
 
 while True:
-    
     ostatni_czas_na_podlozu = pygame.time.get_ticks() - -101
 
     szerokosc_swiata = max(p.right for p in prostokaty_podloza)
@@ -48,12 +48,13 @@ while True:
         button_event = event
         if hasattr(event, "pos"):
             button_event = pygame.event.Event(event.type, {**event.dict, "pos": (int(event.pos[0] * SZEROKOSC / EKRAN.get_width()), int(event.pos[1] * WYSOKOSC / EKRAN.get_height()))})
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_w and (na_podlozu or (pygame.time.get_ticks() - ostatni_czas_na_podlozu <= 100)) and not menu:
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_w and (na_podlozu or (pygame.time.get_ticks() - ostatni_czas_na_podlozu <= 100)) and not menu and not SKOK:
             ostatni_czas_na_podlozu = pygame.time.get_ticks() - 101
             predkosc_y = SILA_SKOKU
             klatki_skoku = 0
             na_podlozu = False
             gracz.STATE = "JUMP"
+            SKOK = True
         elif event.type == pygame.KEYUP and event.key == pygame.K_w and predkosc_y < 0 and not menu:
             predkosc_y = int(predkosc_y * 0.45)
         if Przycisk_Menu.handleEvent(button_event):
@@ -125,6 +126,8 @@ while True:
     gracz.zsynchronizuj_pozycje()
 
     na_podlozu = gracz.czy_dotyka_podloza()
+    if na_podlozu:
+        SKOK = False
 
     if na_podlozu and predkosc_y > 0:
         predkosc_y = 0
@@ -133,7 +136,6 @@ while True:
         gracz.STATE = "WALK" if ruch_x and na_podlozu else "IDLE"
 
     SCENA.fill((60, 160, 170))
-    gracz.rysuj(ANIMACJA, SCENA, kamera_x, kamera_y)
 
     for obiekt in obiekty_podloza:
         obiekt.rysuj(ANIMACJA, SCENA, kamera_x, kamera_y)
@@ -149,9 +151,11 @@ while True:
             if gracz.prostokat.colliderect(moneta.prostokat):
                 moneta.BEING = False
                 monety_liczba += 1
+    gracz.rysuj(ANIMACJA, SCENA, kamera_x, kamera_y)
+    invincibility = False
     for kolec in kolce:
         kolec.rysuj(ANIMACJA, SCENA, kamera_x, kamera_y)
-        if gracz.mask.overlap(kolec.mask, (gracz.prostokat.x - kolec.prostokat.x, gracz.prostokat.y - kolec.prostokat.y)):
+        if gracz.mask.overlap(kolec.mask, (gracz.prostokat.x - kolec.prostokat.x, gracz.prostokat.y - kolec.prostokat.y)) and not invincibility:
             if ruch_x > 0:
                 predkosc_odbicia_x = -12
             elif ruch_x < 0:
@@ -164,7 +168,13 @@ while True:
                 predkosc_y = 20
             gracz.zsynchronizuj_pozycje()
             serca -= 1
+            invincibility = True
+    invincibility = False
 
+    Tekst_Monety = pygwidgets.DisplayText(SCENA, loc=(80, 110), value = str(monety_liczba), fontName = f"Phantom/assets/ARCADECLASSIC.TTF", fontSize = 60, textColor=(186, 164, 20))
+    Tekst_Monety.show()
+    Tekst_Monety.draw()
+    SCENA.blit(pygame.transform.scale_by(pygame.image.load(f"Phantom/assets/MONEY_COUNTER.png"), 2), (20, 120))
 
     SCENA.blit(pygame.image.load(f"Phantom/assets/RAMA_PRZYCISKOW.png"), (460, 15))
     Przycisk_Menu.draw()
