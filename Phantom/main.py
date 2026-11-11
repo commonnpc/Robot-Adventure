@@ -32,6 +32,7 @@ serca = 3
 ANIMACJA_ENERGIA = 0
 monety_liczba = 0
 SKOK = False
+pociski = []
 
 while True:
     ostatni_czas_na_podlozu = pygame.time.get_ticks() - -101
@@ -55,6 +56,8 @@ while True:
             na_podlozu = False
             gracz.STATE = "JUMP"
             SKOK = True
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+            pociski.append(Bullet(gracz.prostokat.center[0], gracz.prostokat.center[1], 1, gracz.KIERUNEK))
         elif event.type == pygame.KEYUP and event.key == pygame.K_w and predkosc_y < 0 and not menu:
             predkosc_y = int(predkosc_y * 0.45)
         if Przycisk_Menu.handleEvent(button_event):
@@ -170,6 +173,19 @@ while True:
             serca -= 1
             invincibility = True
     invincibility = False
+    pociski_do_usuniecia = []
+    for pocisk in pociski:
+        if pocisk.kierunek == "PRAWO":
+            pocisk.x += 5
+        else:
+            pocisk.x -= 5
+        pocisk.prostokat.center = pocisk.x, pocisk.y
+        SCENA.blit(pocisk.obrazek, (pocisk.prostokat.x - kamera_x, pocisk.prostokat.y - kamera_y))
+        if pocisk.prostokat.collidelist(prostokaty_podloza ) != -1:
+            pociski_do_usuniecia.append(pocisk)
+
+    pociski = list(set(pociski).difference(set(pociski_do_usuniecia)))
+            
 
     Tekst_Monety = pygwidgets.DisplayText(SCENA, loc=(80, 110), value = str(monety_liczba), fontName = f"Phantom/assets/ARCADECLASSIC.TTF", fontSize = 60, textColor=(186, 164, 20))
     Tekst_Monety.show()

@@ -87,6 +87,20 @@ class Sprite():
                 else:
                     klatka = pygame.transform.scale_by(klatka, 800/SZEROKOSCW)
                 stan[i] = klatka
+
+class Bullet():
+    def __init__(self, xgracza, ygracza, wielkosc, kierunek):
+        self.x = xgracza
+        self.y = ygracza
+        self.wielkosc = wielkosc
+        self.kierunek = kierunek
+        if gracz.KIERUNEK == "LEWO":
+            self.x -= 30
+        else:
+            self.x += 30
+        self.obrazek = pygame.image.load(f"Phantom/assets/BULLET.png")
+        self.prostokat = self.obrazek.get_rect(center = (self.x, self.y))
+
         
 gracz = Sprite(100, 100, IDLE = (pygame.image.load(f"Phantom/assets/gracz/PLAYER-IDLE.png"), 5), WALK = (pygame.image.load(f"Phantom/assets/gracz/PLAYER-WALK.png"), 10), JUMP = (pygame.image.load(f"Phantom/assets/gracz/PLAYER-JUMP.png"), 5))
 
