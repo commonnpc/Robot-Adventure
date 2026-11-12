@@ -33,6 +33,10 @@ ANIMACJA_ENERGIA = 0
 monety_liczba = 0
 SKOK = False
 pociski = []
+przerwa_na_pociski = 20
+pusty_pasek = pygame.image.load(f"Phantom/assets/paski/PASEK_PUSTY.png")
+moc = 0
+moc_wzrost = False
 
 while True:
     ostatni_czas_na_podlozu = pygame.time.get_ticks() - -101
@@ -56,8 +60,12 @@ while True:
             na_podlozu = False
             gracz.STATE = "JUMP"
             SKOK = True
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+        if event.type == pygame.KEYUP and event.key == pygame.K_SPACE and moc > 0:
+            przerwa_na_pociski = 0
             pociski.append(Bullet(gracz.prostokat.center[0], gracz.prostokat.center[1], 1, gracz.KIERUNEK))
+            moc_wzrost = False
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and przerwa_na_pociski > 20:
+            moc_wzrost = True
         elif event.type == pygame.KEYUP and event.key == pygame.K_w and predkosc_y < 0 and not menu:
             predkosc_y = int(predkosc_y * 0.45)
         if Przycisk_Menu.handleEvent(button_event):
@@ -183,9 +191,13 @@ while True:
         SCENA.blit(pocisk.obrazek, (pocisk.prostokat.x - kamera_x, pocisk.prostokat.y - kamera_y))
         if pocisk.prostokat.collidelist(prostokaty_podloza ) != -1:
             pociski_do_usuniecia.append(pocisk)
-
     pociski = list(set(pociski).difference(set(pociski_do_usuniecia)))
-            
+
+    SCENA.blit(pusty_pasek, (gracz.prostokat.left - kamera_x - 6, gracz.prostokat.y - kamera_y - 20))
+    SCENA.blit(pygame.transform.scale_by(pygame.image.load(f"Phantom/assets/paski/PASEK_ENERGII.png").subsurface(0, 0, przerwa_na_pociski if przerwa_na_pociski < 20 else 20, 3), 3), (gracz.prostokat.left - kamera_x - 3, gracz.prostokat.y - kamera_y - 17))
+
+    SCENA.blit(pusty_pasek, (gracz.prostokat.left - kamera_x - 6, gracz.prostokat.y - kamera_y - 50))
+    SCENA.blit(pygame.transform.scale_by(pygame.image.load(f"Phantom/assets/paski/PASEK_MOCY.png").subsurface(0, 0, moc if moc < 20 else 20, 3), 3), (gracz.prostokat.left - kamera_x - 3, gracz.prostokat.y - kamera_y - 47))
 
     Tekst_Monety = pygwidgets.DisplayText(SCENA, loc=(80, 110), value = str(monety_liczba), fontName = f"Phantom/assets/ARCADECLASSIC.TTF", fontSize = 60, textColor=(186, 164, 20))
     Tekst_Monety.show()
@@ -233,3 +245,10 @@ while True:
             ANIMACJA_ENERGIA = 0
         else:
             ANIMACJA_ENERGIA += 1
+    if KLATKA % 5 == 0:
+        przerwa_na_pociski += 1
+
+    if moc_wzrost and KLATKA  % 2 == 0:
+        moc += 1
+    elif not moc_wzrost:
+        moc = 0

@@ -98,7 +98,7 @@ class Bullet():
             self.x -= 30
         else:
             self.x += 30
-        self.obrazek = pygame.image.load(f"Phantom/assets/BULLET.png")
+        self.obrazek = pygame.transform.scale_by(pygame.image.load(f"Phantom/assets/BULLET.png"), 0.5)
         self.prostokat = self.obrazek.get_rect(center = (self.x, self.y))
 
         
