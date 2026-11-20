@@ -89,7 +89,8 @@ class Sprite():
                 stan[i] = klatka
 
 class Bullet():
-    def __init__(self, xgracza, ygracza, wielkosc, kierunek):
+    def __init__(self, xgracza, ygracza, wielkosc, kierunek, moc):
+        self.moc = moc
         self.x = xgracza
         self.y = ygracza
         self.wielkosc = wielkosc
@@ -98,7 +99,7 @@ class Bullet():
             self.x -= 30
         else:
             self.x += 30
-        self.obrazek = pygame.transform.scale_by(pygame.image.load(f"Phantom/assets/BULLET.png"), 0.5)
+        self.obrazek = pygame.transform.scale_by(pygame.image.load(f"Phantom/assets/BULLET.png"), 0.5 if self.moc <= 15 else 0.8)
         self.prostokat = self.obrazek.get_rect(center = (self.x, self.y))
 
         

@@ -15,9 +15,7 @@ Przycisk_Menu = pygwidgets.CustomButton(SCENA, (480, 30), up = f"Phantom/assets/
 Przycisk_Ekran = pygwidgets.CustomButton(SCENA, (580, 30), up = f"Phantom/assets/przyciski/przycisk_ekran/PRZYCISK_EKRAN-IDLE.png", down = f"Phantom/assets/przyciski/przycisk_ekran/PRZYCISK_EKRAN-KLIKNIETY.png", over = f"Phantom/assets/przyciski/przycisk_ekran/PRZYCISK_EKRAN-NA_MYSZY.png")
 Przycisk_Ekranik = pygwidgets.CustomButton(SCENA, (580, 30), up = f"Phantom/assets/przyciski/przycisk_ekranik/PRZYCISK_EKRANIK-IDLE.png", down = f"Phantom/assets/przyciski/przycisk_ekranik/PRZYCISK_EKRANIK-KLIKNIETY.png", over = f"Phantom/assets/przyciski/przycisk_ekranik/PRZYCISK_EKRANIK-NA_MYSZY.png")
 Przycisk_Wyjscie = pygwidgets.CustomButton(SCENA, (680, 30), up = f"Phantom/assets/przyciski/przycisk_wyjscie/PRZYCISK_WYJSCIE-IDLE.png", down = f"Phantom/assets/przyciski/przycisk_wyjscie/PRZYCISK_WYJSCIE-KLIKNIETY.png", over = f"Phantom/assets/przyciski/przycisk_wyjscie/PRZYCISK_WYJSCIE-NA_MYSZY.png")
-Przycisk_Jezyk = pygwidgets.CustomButton(SCENA, (162, 120), up = f"Phantom/assets/przyciski/przycisk_jezyk/PRZYCISK_JEZYK-IDLE.png", down = f"Phantom/assets/przyciski/przycisk_jezyk/PRZYCISK_JEZYK-KLIKNIETY.png", over = f"Phantom/assets/przyciski/przycisk_jezyk/PRZYCISK_JEZYK-NA_MYSZY.png")
 Przycisk_Menu.show()
-Przycisk_Jezyk.hide()
 Przycisk_Wyjscie.show()
 predkosc_y = 0
 predkosc_odbicia_x = 0
@@ -37,10 +35,12 @@ przerwa_na_pociski = 20
 pusty_pasek = pygame.image.load(f"Phantom/assets/paski/PASEK_PUSTY.png")
 moc = 0
 moc_wzrost = False
+jezyk = "ang"
+Przycisk_Jezyk = pygwidgets.CustomButton(SCENA, (162, 120), up = f"Phantom/assets/przyciski/przycisk_jezyk_en/PRZYCISK_JEZYK-IDLE.png", down = f"Phantom/assets/przyciski/przycisk_jezyk_en/PRZYCISK_JEZYK-KLIKNIETY.png", over = f"Phantom/assets/przyciski/przycisk_jezyk_en/PRZYCISK_JEZYK-NA_MYSZY.png")
+Przycisk_Powrot = pygwidgets.CustomButton(SCENA, (162, 372), up = f"Phantom/assets/przyciski/przycisk_wroc_en/PRZYCISK_WROC-IDLE.png", down = f"Phantom/assets/przyciski/przycisk_wroc_en/PRZYCISK_WROC-KLIKNIETY.png", over = f"Phantom/assets/przyciski/przycisk_wroc_en/PRZYCISK_WROC-NA_MYSZY.png")
 
 while True:
     ostatni_czas_na_podlozu = pygame.time.get_ticks() - -101
-
     szerokosc_swiata = max(p.right for p in prostokaty_podloza)
     kamera_x = max(0, min(gracz.prostokat.centerx - SZEROKOSC // 2, szerokosc_swiata - SZEROKOSC))
     wysokosc_swiata = max(p.bottom for p in prostokaty_podloza)
@@ -48,7 +48,6 @@ while True:
     na_podlozu = gracz.czy_dotyka_podloza()
     if na_podlozu:
         ostatni_czas_na_podlozu = pygame.time.get_ticks()
-
     for event in pygame.event.get():
         button_event = event
         if hasattr(event, "pos"):
@@ -62,7 +61,7 @@ while True:
             SKOK = True
         if event.type == pygame.KEYUP and event.key == pygame.K_SPACE and moc > 0:
             przerwa_na_pociski = 0
-            pociski.append(Bullet(gracz.prostokat.center[0], gracz.prostokat.center[1], 1, gracz.KIERUNEK))
+            pociski.append(Bullet(gracz.prostokat.center[0], gracz.prostokat.center[1], 1, gracz.KIERUNEK, moc))
             moc_wzrost = False
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and przerwa_na_pociski > 20:
             moc_wzrost = True
@@ -90,9 +89,16 @@ while True:
             Przycisk_Ekranik.hide()
             Przycisk_Ekran.show()
         elif Przycisk_Jezyk.handleEvent(button_event):
+            if jezyk == "ang":
+                jezyk = "pol"
+                Przycisk_Jezyk = pygwidgets.CustomButton(SCENA, (162, 120), up = f"Phantom/assets/przyciski/przycisk_jezyk_pl/PRZYCISK_JEZYK-IDLE.png", down = f"Phantom/assets/przyciski/przycisk_jezyk_pl/PRZYCISK_JEZYK-KLIKNIETY.png", over = f"Phantom/assets/przyciski/przycisk_jezyk_pl/PRZYCISK_JEZYK-NA_MYSZY.png")
+                Przycisk_Powrot = pygwidgets.CustomButton(SCENA, (162, 372), up = f"Phantom/assets/przyciski/przycisk_wroc_pl/PRZYCISK_WROC-IDLE.png", down = f"Phantom/assets/przyciski/przycisk_wroc_pl/PRZYCISK_WROC-KLIKNIETY.png", over = f"Phantom/assets/przyciski/przycisk_wroc_pl/PRZYCISK_WROC-NA_MYSZY.png")
+            else:
+                Przycisk_Jezyk = pygwidgets.CustomButton(SCENA, (162, 120), up = f"Phantom/assets/przyciski/przycisk_jezyk_en/PRZYCISK_JEZYK-IDLE.png", down = f"Phantom/assets/przyciski/przycisk_jezyk_en/PRZYCISK_JEZYK-KLIKNIETY.png", over = f"Phantom/assets/przyciski/przycisk_jezyk_en/PRZYCISK_JEZYK-NA_MYSZY.png")
+                Przycisk_Powrot = pygwidgets.CustomButton(SCENA, (162, 372), up = f"Phantom/assets/przyciski/przycisk_wroc_en/PRZYCISK_WROC-IDLE.png", down = f"Phantom/assets/przyciski/przycisk_wroc_en/PRZYCISK_WROC-KLIKNIETY.png", over = f"Phantom/assets/przyciski/przycisk_wroc_en/PRZYCISK_WROC-NA_MYSZY.png")
+                jezyk = "ang"
+        elif Przycisk_Powrot.handleEvent(button_event):
             menu = False
-            Przycisk_Jezyk.hide()
-            #na razie to wyjscie z menu, ale bedzie jezykiem
 
     klawisze = pygame.key.get_pressed()
     ruch_x = 0
@@ -220,6 +226,7 @@ while True:
     if menu:
         SCENA.blit(pygame.image.load(f"Phantom/assets/MENU_USTAWIEN.png"), (36, 30))
         Przycisk_Jezyk.draw()
+        Przycisk_Powrot.draw()
 
     EKRAN.blit(pygame.transform.scale(SCENA, EKRAN.get_size()), (0, 0))
 
@@ -248,7 +255,7 @@ while True:
     if KLATKA % 5 == 0:
         przerwa_na_pociski += 1
 
-    if moc_wzrost and KLATKA  % 2 == 0:
+    if moc_wzrost and KLATKA % 2 == 0 and moc <= 20:
         moc += 1
     elif not moc_wzrost:
         moc = 0
