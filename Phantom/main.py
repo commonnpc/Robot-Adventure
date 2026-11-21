@@ -169,24 +169,6 @@ while True:
                 moneta.BEING = False
                 monety_liczba += 1
     gracz.rysuj(ANIMACJA, SCENA, kamera_x, kamera_y)
-    invincibility = False
-    for kolec in kolce:
-        kolec.rysuj(ANIMACJA, SCENA, kamera_x, kamera_y)
-        if gracz.mask.overlap(kolec.mask, (gracz.prostokat.x - kolec.prostokat.x, gracz.prostokat.y - kolec.prostokat.y)) and not invincibility:
-            if ruch_x > 0:
-                predkosc_odbicia_x = -12
-            elif ruch_x < 0:
-                predkosc_odbicia_x = 12
-            if predkosc_y > 0:
-                gracz.prostokat.bottom = kolec.prostokat.top
-                predkosc_y = -20
-            elif predkosc_y < 0:
-                gracz.prostokat.top = kolec.prostokat.bottom
-                predkosc_y = 20
-            gracz.zsynchronizuj_pozycje()
-            serca -= 1
-            invincibility = True
-    invincibility = False
     pociski_do_usuniecia = []
     for pocisk in pociski:
         if pocisk.kierunek == "PRAWO":
@@ -197,8 +179,44 @@ while True:
         SCENA.blit(pocisk.obrazek, (pocisk.prostokat.x - kamera_x, pocisk.prostokat.y - kamera_y))
         if pocisk.prostokat.collidelist(prostokaty_podloza ) != -1:
             pociski_do_usuniecia.append(pocisk)
+    wody_do_usuniecia = []
+    for woda in wody:
+        if woda.STATE == "IDLE":
+            if ANIMACJA_ENERGIA < 2:
+                woda.rysuj(ANIMACJA_ENERGIA, SCENA, kamera_x, kamera_y)
+            else:
+                woda.rysuj(ANIMACJA_ENERGIA - 2, SCENA, kamera_x, kamera_y)
+        for pocisk in pociski:
+            if woda.prostokat.colliderect(pocisk.prostokat):
+                if pocisk.moc == 20:
+                    woda.WODNE_ZYCIA -= 2
+                else:
+                    woda.WODNE_ZYCIA -= 1
+                if woda.WODNE_ZYCIA <= 0:
+                    wody_do_usuniecia.append(woda)
+                pociski_do_usuniecia.append(pocisk)
+    wody = list(set(wody).difference(set(wody_do_usuniecia)))
     pociski = list(set(pociski).difference(set(pociski_do_usuniecia)))
-
+    invincibility = False
+    for lista in [wody, kolce]:
+        for obiekt in lista:
+            if obiekt in kolce:
+                obiekt.rysuj(ANIMACJA, SCENA, kamera_x, kamera_y)
+            if gracz.mask.overlap(obiekt.mask, (gracz.prostokat.x - obiekt.prostokat.x, gracz.prostokat.y - obiekt.prostokat.y)) and not invincibility:
+                if ruch_x > 0:
+                    predkosc_odbicia_x = -12
+                elif ruch_x < 0:
+                    predkosc_odbicia_x = 12
+                if predkosc_y > 0:
+                    gracz.prostokat.bottom = obiekt.prostokat.top
+                    predkosc_y = -20
+                elif predkosc_y < 0:
+                    gracz.prostokat.top = obiekt.prostokat.bottom
+                    predkosc_y = 20
+                gracz.zsynchronizuj_pozycje()
+                serca -= 1
+                invincibility = True
+    invincibility = False
     SCENA.blit(pusty_pasek, (gracz.prostokat.left - kamera_x - 6, gracz.prostokat.y - kamera_y - 20))
     SCENA.blit(pygame.transform.scale_by(pygame.image.load(f"Phantom/assets/paski/PASEK_ENERGII.png").subsurface(0, 0, przerwa_na_pociski if przerwa_na_pociski < 20 else 20, 3), 3), (gracz.prostokat.left - kamera_x - 3, gracz.prostokat.y - kamera_y - 17))
 
@@ -254,7 +272,6 @@ while True:
             ANIMACJA_ENERGIA += 1
     if KLATKA % 5 == 0:
         przerwa_na_pociski += 1
-
     if moc_wzrost and KLATKA % 2 == 0 and moc <= 20:
         moc += 1
     elif not moc_wzrost:

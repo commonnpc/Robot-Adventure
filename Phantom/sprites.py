@@ -8,7 +8,9 @@ energie = []
 monety = []
 
 class Sprite():
-    def __init__(self, X, Y, IDLE = None, RUN = None, WALK = None, JUMP = None, STATE = "IDLE", KIERUNEK = "PRAWO"):
+    def __init__(self, X, Y, IDLE = None, RUN = None, WALK = None, JUMP = None, STATE = "IDLE", KIERUNEK = "PRAWO", WODA = 1):
+        if WODA != 1:
+            self.WODNE_ZYCIA = 2
         self.BEING = True
         self.STATE = STATE
         self.KIERUNEK = KIERUNEK
@@ -16,16 +18,16 @@ class Sprite():
         self.Y = Y
         self.STANY = []
         if IDLE != None:
-            self.IDLEan = podziel_klatki(IDLE[0], IDLE[1],  2.5)
+            self.IDLEan = podziel_klatki(IDLE[0], IDLE[1],  2.5 * WODA)
             self.STANY.append(self.IDLEan)
         if RUN != None:
-            self.RUNan = podziel_klatki(RUN[0], RUN[1],  2.5)
+            self.RUNan = podziel_klatki(RUN[0], RUN[1],  2.5 * WODA)
             self.STANY.append(self.RUNan)
         if WALK != None:
-            self.WALKan = podziel_klatki(WALK[0], WALK[1],  2.5)
+            self.WALKan = podziel_klatki(WALK[0], WALK[1],  2.5 * WODA)
             self.STANY.append(self.WALKan)
         if JUMP != None:
-            self.JUMPan = podziel_klatki(JUMP[0], JUMP[1],  2.5)
+            self.JUMPan = podziel_klatki(JUMP[0], JUMP[1],  2.5 * WODA)
             self.STANY.append(self.JUMPan)
         self.prostokat = self.IDLEan[0].get_rect(topleft=(X, Y))
 
@@ -99,12 +101,13 @@ class Bullet():
             self.x -= 30
         else:
             self.x += 30
-        self.obrazek = pygame.transform.scale_by(pygame.image.load(f"Phantom/assets/BULLET.png"), 0.5 if self.moc <= 15 else 0.8)
+        self.obrazek = pygame.transform.scale_by(pygame.image.load(f"Phantom/assets/BULLET.png"), 0.5 if self.moc < 20 else 0.8)
         self.prostokat = self.obrazek.get_rect(center = (self.x, self.y))
 
         
 gracz = Sprite(100, 100, IDLE = (pygame.image.load(f"Phantom/assets/gracz/PLAYER-IDLE.png"), 5), WALK = (pygame.image.load(f"Phantom/assets/gracz/PLAYER-WALK.png"), 10), JUMP = (pygame.image.load(f"Phantom/assets/gracz/PLAYER-JUMP.png"), 5))
 
+wody = []
 mapa = open(f"Phantom/mapa.txt", "r").read()
 x = 0
 linia = 0
@@ -128,6 +131,8 @@ for znak in mapa:
         energie.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/ENERGY.png"), 4)))
     elif znak == "M":
         monety.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/MONEY.png"), 4)))
+    elif znak == "W":
+        wody.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/woda/WATER-IDLE.png"), 2), WALK = (pygame.image.load(f"Phantom/assets/woda/WATER-WALK.png"), 4), JUMP = (pygame.image.load(f"Phantom/assets/woda/WATER-JUMP.png"), 5), WODA = 5/4))
     a += 1
 
 
