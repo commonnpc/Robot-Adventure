@@ -71,7 +71,6 @@ while True:
             menu = True
             Przycisk_Jezyk.show()
         elif Przycisk_Wyjscie.handleEvent(button_event):
-            #czy na pewno
             pygame.quit()
             sys.exit()
         elif Przycisk_Ekran.handleEvent(button_event):
@@ -140,6 +139,31 @@ while True:
                 gracz.prostokat.top = prostokat_podloza.bottom
                 predkosc_y = 0
 
+    for woda in wody:
+        if woda.STATE == "WALK" and KLATKA % 15 == 0:
+            if woda.KIERUNEK == "PRAWO":
+                woda.X += 20
+                woda.prostokat.topleft = (woda.X, woda.Y)
+                if woda.prostokat.right > szerokosc_swiata:
+                    woda.prostokat.right = szerokosc_swiata
+                    woda.KIERUNEK = "LEWO"
+            else:
+                woda.X -= 20
+                woda.prostokat.topleft = (woda.X, woda.Y)
+                if woda.prostokat.left < 0:
+                    woda.prostokat.left = 0
+                    woda.KIERUNEK = "LEWO"
+            for lista in [obiekty_podloza, kolce]:
+                for obiekt in lista:
+                    if obiekt.prostokat.colliderect(woda.prostokat):
+                        if woda.KIERUNEK == "PRAWO":
+                            woda.KIERUNEK = "LEWO"
+                            woda.X -= 5
+                        else:
+                            woda.KIERUNEK = "PRAWO"
+                            woda.X += 5
+                        woda.prostokat.topleft = (woda.X, woda.Y)
+
     gracz.zsynchronizuj_pozycje()
 
     na_podlozu = gracz.czy_dotyka_podloza()
@@ -153,22 +177,26 @@ while True:
         gracz.STATE = "WALK" if ruch_x and na_podlozu else "IDLE"
 
     SCENA.fill((60, 160, 170))
-
+    #ZIEMIA
     for obiekt in obiekty_podloza:
         obiekt.rysuj(ANIMACJA, SCENA, kamera_x, kamera_y)
+    #ENERGIA
     for energia in energie:
         if energia.BEING:
             energia.rysuj(ANIMACJA_ENERGIA, SCENA, kamera_x, kamera_y)
             if gracz.prostokat.colliderect(energia.prostokat) and serca != 3:
                 energia.BEING = False
                 serca += 1
+    #MONETY
     for moneta in monety:
        if moneta.BEING:
             moneta.rysuj(ANIMACJA_ENERGIA, SCENA, kamera_x, kamera_y)
             if gracz.prostokat.colliderect(moneta.prostokat):
                 moneta.BEING = False
                 monety_liczba += 1
+    #GRACZ
     gracz.rysuj(ANIMACJA, SCENA, kamera_x, kamera_y)
+    #POCISKI
     pociski_do_usuniecia = []
     for pocisk in pociski:
         if pocisk.kierunek == "PRAWO":
@@ -179,6 +207,7 @@ while True:
         SCENA.blit(pocisk.obrazek, (pocisk.prostokat.x - kamera_x, pocisk.prostokat.y - kamera_y))
         if pocisk.prostokat.collidelist(prostokaty_podloza ) != -1:
             pociski_do_usuniecia.append(pocisk)
+    #WODY
     wody_do_usuniecia = []
     for woda in wody:
         if woda.STATE == "IDLE":
@@ -186,6 +215,8 @@ while True:
                 woda.rysuj(ANIMACJA_ENERGIA, SCENA, kamera_x, kamera_y)
             else:
                 woda.rysuj(ANIMACJA_ENERGIA - 2, SCENA, kamera_x, kamera_y)
+        elif woda.STATE == "WALK":
+            woda.rysuj(ANIMACJA_ENERGIA, SCENA, kamera_x, kamera_y)
         for pocisk in pociski:
             if woda.prostokat.colliderect(pocisk.prostokat):
                 if pocisk.moc == 20:
@@ -197,6 +228,7 @@ while True:
                 pociski_do_usuniecia.append(pocisk)
     wody = list(set(wody).difference(set(wody_do_usuniecia)))
     pociski = list(set(pociski).difference(set(pociski_do_usuniecia)))
+    #KOLIZJE WODY I KOLCOW
     invincibility = False
     for lista in [wody, kolce]:
         for obiekt in lista:
@@ -216,7 +248,7 @@ while True:
                 gracz.zsynchronizuj_pozycje()
                 serca -= 1
                 invincibility = True
-    invincibility = False
+    #INNE
     SCENA.blit(pusty_pasek, (gracz.prostokat.left - kamera_x - 6, gracz.prostokat.y - kamera_y - 20))
     SCENA.blit(pygame.transform.scale_by(pygame.image.load(f"Phantom/assets/paski/PASEK_ENERGII.png").subsurface(0, 0, przerwa_na_pociski if przerwa_na_pociski < 20 else 20, 3), 3), (gracz.prostokat.left - kamera_x - 3, gracz.prostokat.y - kamera_y - 17))
 
@@ -266,7 +298,7 @@ while True:
         else:
             ANIMACJA += 1
     if KLATKA % 15 == 0:
-        if ANIMACJA_ENERGIA == 3:
+        if ANIMACJA_ENERGIA == 3: #to jednak animacja nie tylko dla energii, ale nie chce mi sie już nazwy zmieniać
             ANIMACJA_ENERGIA = 0
         else:
             ANIMACJA_ENERGIA += 1

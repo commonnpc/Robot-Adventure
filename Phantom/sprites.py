@@ -38,13 +38,16 @@ class Sprite():
                 self.mask = pygame.mask.from_surface(self.IDLEan[ANIMACJA])
             elif self.STATE == "RUN":
                 pass #################
-            elif self.STATE == "WALK":
+            elif self.STATE == "WALK" and self not in wody:
                 if ANIMACJA % 2 == 0:
                     EKRAN.blit(self.WALKan[2 * ANIMACJA], (self.X - kamera_x, self.Y - kamera_y))
                     self.mask = pygame.mask.from_surface(self.WALKan[ANIMACJA * 2])
                 else:
                     EKRAN.blit(self.WALKan[2 * ANIMACJA + 1], (self.X - kamera_x, self.Y - kamera_y))
                     self.mask = pygame.mask.from_surface(self.WALKan[2 * ANIMACJA + 1])
+            elif self.STATE == "WALK":
+                EKRAN.blit(self.WALKan[ANIMACJA], (self.X - kamera_x, self.Y - kamera_y))
+                self.mask = pygame.mask.from_surface(self.WALKan[ANIMACJA])
             elif self.STATE == "JUMP":
                 EKRAN.blit(self.JUMPan[ANIMACJA], (self.X - kamera_x, self.Y - kamera_y))
                 self.mask = pygame.mask.from_surface(self.JUMPan[ANIMACJA])
@@ -54,13 +57,16 @@ class Sprite():
                 self.mask = pygame.mask.from_surface(pygame.transform.flip(self.IDLEan[ANIMACJA], True, False))
             elif self.STATE == "RUN":
                 pass ################
-            elif self.STATE == "WALK":
+            elif self.STATE == "WALK" and self not in wody:
                 if ANIMACJA % 2 == 0:
                     EKRAN.blit((pygame.transform.flip(self.WALKan[2 * ANIMACJA], True, False)), (self.X - kamera_x, self.Y - kamera_y))
                     self.mask = pygame.mask.from_surface(pygame.transform.flip(self.WALKan[2 * ANIMACJA], True, False))
                 else:
                     EKRAN.blit((pygame.transform.flip(self.WALKan[2 * ANIMACJA + 1], True, False)), (self.X - kamera_x, self.Y - kamera_y))
                     self.mask = pygame.mask.from_surface(pygame.transform.flip(self.WALKan[2 * ANIMACJA + 1], True, False))
+            elif self.STATE == "WALK":
+                EKRAN.blit((pygame.transform.flip(self.WALKan[ANIMACJA], True, False)), (self.X - kamera_x, self.Y - kamera_y))
+                self.mask = pygame.mask.from_surface(pygame.transform.flip(self.WALKan[ANIMACJA], True, False))
             elif self.STATE == "JUMP":
                 EKRAN.blit((pygame.transform.flip(self.JUMPan[ANIMACJA], True, False)), (self.X - kamera_x, self.Y - kamera_y))
                 self.mask = pygame.mask.from_surface(pygame.transform.flip(self.JUMPan[ANIMACJA], True, False))
@@ -133,6 +139,8 @@ for znak in mapa:
         monety.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/MONEY.png"), 4)))
     elif znak == "W":
         wody.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/woda/WATER-IDLE.png"), 2), WALK = (pygame.image.load(f"Phantom/assets/woda/WATER-WALK.png"), 4), JUMP = (pygame.image.load(f"Phantom/assets/woda/WATER-JUMP.png"), 5), WODA = 5/4))
+    elif znak == "w":
+        wody.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/woda/WATER-IDLE.png"), 2), WALK = (pygame.image.load(f"Phantom/assets/woda/WATER-WALK.png"), 4), JUMP = (pygame.image.load(f"Phantom/assets/woda/WATER-JUMP.png"), 5), WODA = 5/4, STATE = "WALK"))
     a += 1
 
 

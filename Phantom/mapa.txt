@@ -1,7 +1,7 @@
      EE        MM        EE     /
      SS                  SS     /
                XX               /
-     W      GGGGGGGG      W     /
+     W      GGGGGGGG      w     /
 GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG/
 GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG/
 SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS/
