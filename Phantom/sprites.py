@@ -8,7 +8,7 @@ energie = []
 monety = []
 
 class Sprite():
-    def __init__(self, X, Y, IDLE = None, RUN = None, WALK = None, JUMP = None, STATE = "IDLE", KIERUNEK = "PRAWO", WODA = 1):
+    def __init__(self, X, Y, IDLE = None, SHOCK = None, WALK = None, JUMP = None, STATE = "IDLE", KIERUNEK = "PRAWO", WODA = 1):
         if WODA != 1:
             self.WODNE_ZYCIA = 2
         self.BEING = True
@@ -20,9 +20,9 @@ class Sprite():
         if IDLE != None:
             self.IDLEan = podziel_klatki(IDLE[0], IDLE[1],  2.5 * WODA)
             self.STANY.append(self.IDLEan)
-        if RUN != None:
-            self.RUNan = podziel_klatki(RUN[0], RUN[1],  2.5 * WODA)
-            self.STANY.append(self.RUNan)
+        if SHOCK != None:
+            self.SHOCKan = podziel_klatki(SHOCK[0], SHOCK[1],  2.5 * WODA)
+            self.STANY.append(self.SHOCKan)
         if WALK != None:
             self.WALKan = podziel_klatki(WALK[0], WALK[1],  2.5 * WODA)
             self.STANY.append(self.WALKan)
@@ -36,8 +36,13 @@ class Sprite():
             if self.STATE == "IDLE":
                 EKRAN.blit(self.IDLEan[ANIMACJA], (self.X - kamera_x, self.Y - kamera_y))
                 self.mask = pygame.mask.from_surface(self.IDLEan[ANIMACJA])
-            elif self.STATE == "RUN":
-                pass #################
+            elif self.STATE == "SHOCK":
+                if ANIMACJA % 2 == 0:
+                    EKRAN.blit(self.SHOCKan[2 * ANIMACJA], (self.X - kamera_x, self.Y - kamera_y))
+                    self.mask = pygame.mask.from_surface(self.SHOCKan[ANIMACJA * 2])
+                else:
+                    EKRAN.blit(self.SHOCKan[2 * ANIMACJA + 1], (self.X - kamera_x, self.Y - kamera_y))
+                    self.mask = pygame.mask.from_surface(self.SHOCKan[2 * ANIMACJA + 1])
             elif self.STATE == "WALK" and self not in wody:
                 if ANIMACJA % 2 == 0:
                     EKRAN.blit(self.WALKan[2 * ANIMACJA], (self.X - kamera_x, self.Y - kamera_y))
@@ -55,8 +60,13 @@ class Sprite():
             if self.STATE == "IDLE":
                 EKRAN.blit((pygame.transform.flip(self.IDLEan[ANIMACJA], True, False)), (self.X - kamera_x, self.Y - kamera_y))
                 self.mask = pygame.mask.from_surface(pygame.transform.flip(self.IDLEan[ANIMACJA], True, False))
-            elif self.STATE == "RUN":
-                pass ################
+            elif self.STATE == "SHOCK":
+                if ANIMACJA % 2 == 0:
+                    EKRAN.blit((pygame.transform.flip(self.SHOCKan[2 * ANIMACJA], True, False)), (self.X - kamera_x, self.Y - kamera_y))
+                    self.mask = pygame.mask.from_surface(pygame.transform.flip(self.SHOCKan[2 * ANIMACJA], True, False))
+                else:
+                    EKRAN.blit((pygame.transform.flip(self.WALKan[2 * ANIMACJA + 1], True, False)), (self.X - kamera_x, self.Y - kamera_y))
+                    self.mask = pygame.mask.from_surface(pygame.transform.flip(self.WALKan[2 * ANIMACJA + 1], True, False))
             elif self.STATE == "WALK" and self not in wody:
                 if ANIMACJA % 2 == 0:
                     EKRAN.blit((pygame.transform.flip(self.WALKan[2 * ANIMACJA], True, False)), (self.X - kamera_x, self.Y - kamera_y))
@@ -111,7 +121,7 @@ class Bullet():
         self.prostokat = self.obrazek.get_rect(center = (self.x, self.y))
 
         
-gracz = Sprite(100, 100, IDLE = (pygame.image.load(f"Phantom/assets/gracz/PLAYER-IDLE.png"), 5), WALK = (pygame.image.load(f"Phantom/assets/gracz/PLAYER-WALK.png"), 10), JUMP = (pygame.image.load(f"Phantom/assets/gracz/PLAYER-JUMP.png"), 5))
+gracz = Sprite(100, 100, IDLE = (pygame.image.load(f"Phantom/assets/gracz/PLAYER-IDLE.png"), 5), SHOCK = (pygame.image.load(f"Phantom/assets/gracz/PLAYER-SHOCK.png"), 10), WALK = (pygame.image.load(f"Phantom/assets/gracz/PLAYER-WALK.png"), 10), JUMP = (pygame.image.load(f"Phantom/assets/gracz/PLAYER-JUMP.png"), 5))
 
 wody = []
 mapa = open(f"Phantom/mapa.txt", "r").read()

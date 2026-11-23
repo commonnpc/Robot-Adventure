@@ -40,7 +40,10 @@ Przycisk_Jezyk = pygwidgets.CustomButton(SCENA, (162, 120), up = f"Phantom/asset
 Przycisk_Powrot = pygwidgets.CustomButton(SCENA, (162, 372), up = f"Phantom/assets/przyciski/przycisk_wroc_en/PRZYCISK_WROC-IDLE.png", down = f"Phantom/assets/przyciski/przycisk_wroc_en/PRZYCISK_WROC-KLIKNIETY.png", over = f"Phantom/assets/przyciski/przycisk_wroc_en/PRZYCISK_WROC-NA_MYSZY.png")
 
 while True:
-    ostatni_czas_na_podlozu = pygame.time.get_ticks() - -101
+    if serca <= 0 and gracz.STATE != "SHOCK":
+        gracz.STATE = "SHOCK"
+        #ekran na zagraj ponownie jescze do zrobienia
+    ostatni_czas_na_podlozu = pygame.time.get_ticks() - 101
     szerokosc_swiata = max(p.right for p in prostokaty_podloza)
     kamera_x = max(0, min(gracz.prostokat.centerx - SZEROKOSC // 2, szerokosc_swiata - SZEROKOSC))
     wysokosc_swiata = max(p.bottom for p in prostokaty_podloza)
@@ -52,21 +55,22 @@ while True:
         button_event = event
         if hasattr(event, "pos"):
             button_event = pygame.event.Event(event.type, {**event.dict, "pos": (int(event.pos[0] * SZEROKOSC / EKRAN.get_width()), int(event.pos[1] * WYSOKOSC / EKRAN.get_height()))})
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_w and (na_podlozu or (pygame.time.get_ticks() - ostatni_czas_na_podlozu <= 100)) and not menu and not SKOK:
-            ostatni_czas_na_podlozu = pygame.time.get_ticks() - 101
-            predkosc_y = SILA_SKOKU
-            klatki_skoku = 0
-            na_podlozu = False
-            gracz.STATE = "JUMP"
-            SKOK = True
-        if event.type == pygame.KEYUP and event.key == pygame.K_SPACE and moc > 0:
-            przerwa_na_pociski = 0
-            pociski.append(Bullet(gracz.prostokat.center[0], gracz.prostokat.center[1], 1, gracz.KIERUNEK, moc))
-            moc_wzrost = False
-        elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and przerwa_na_pociski > 20:
-            moc_wzrost = True
-        elif event.type == pygame.KEYUP and event.key == pygame.K_w and predkosc_y < 0 and not menu:
-            predkosc_y = int(predkosc_y * 0.45)
+        if gracz.STATE != "SHOCK":
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_w and (na_podlozu or (pygame.time.get_ticks() - ostatni_czas_na_podlozu <= 100)) and not menu and not SKOK:
+                ostatni_czas_na_podlozu = pygame.time.get_ticks() - 101
+                predkosc_y = SILA_SKOKU
+                klatki_skoku = 0
+                na_podlozu = False
+                gracz.STATE = "JUMP"
+                SKOK = True
+            if event.type == pygame.KEYUP and event.key == pygame.K_SPACE and moc > 0:
+                przerwa_na_pociski = 0
+                pociski.append(Bullet(gracz.prostokat.center[0], gracz.prostokat.center[1], 1, gracz.KIERUNEK, moc))
+                moc_wzrost = False
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE and przerwa_na_pociski > 20:
+                moc_wzrost = True
+            elif event.type == pygame.KEYUP and event.key == pygame.K_w and predkosc_y < 0 and not menu:
+                predkosc_y = int(predkosc_y * 0.45)
         if Przycisk_Menu.handleEvent(button_event):
             menu = True
             Przycisk_Jezyk.show()
@@ -101,43 +105,44 @@ while True:
 
     klawisze = pygame.key.get_pressed()
     ruch_x = 0
-    if klawisze[pygame.K_a] and not klawisze[pygame.K_d] and not menu:
-        ruch_x = -5
-        gracz.KIERUNEK = "LEWO"
-    elif klawisze[pygame.K_d] and not klawisze[pygame.K_a] and not menu:
-        ruch_x = 5
-        gracz.KIERUNEK = "PRAWO"
+    if gracz.STATE != "SHOCK":
+        if klawisze[pygame.K_a] and not klawisze[pygame.K_d] and not menu:
+            ruch_x = -5
+            gracz.KIERUNEK = "LEWO"
+        elif klawisze[pygame.K_d] and not klawisze[pygame.K_a] and not menu:
+            ruch_x = 5
+            gracz.KIERUNEK = "PRAWO"
 
-    ruch_poziomy = ruch_x + predkosc_odbicia_x
-    gracz.prostokat.x += ruch_poziomy
-    for prostokat_podloza in prostokaty_podloza:
-        if gracz.prostokat.colliderect(prostokat_podloza):
-            if ruch_poziomy > 0:
-                gracz.prostokat.right = prostokat_podloza.left
-            elif ruch_poziomy < 0:
-                gracz.prostokat.left = prostokat_podloza.right
-    if gracz.prostokat.right > szerokosc_swiata:
-        gracz.prostokat.right = szerokosc_swiata
-    elif gracz.prostokat.left < 0:
-        gracz.prostokat.left = 0
+        ruch_poziomy = ruch_x + predkosc_odbicia_x
+        gracz.prostokat.x += ruch_poziomy
+        for prostokat_podloza in prostokaty_podloza:
+            if gracz.prostokat.colliderect(prostokat_podloza):
+                if ruch_poziomy > 0:
+                    gracz.prostokat.right = prostokat_podloza.left
+                elif ruch_poziomy < 0:
+                    gracz.prostokat.left = prostokat_podloza.right
+        if gracz.prostokat.right > szerokosc_swiata:
+            gracz.prostokat.right = szerokosc_swiata
+        elif gracz.prostokat.left < 0:
+            gracz.prostokat.left = 0
 
-    if predkosc_odbicia_x > 0:
-        predkosc_odbicia_x = max(0, predkosc_odbicia_x - 1)
-    elif predkosc_odbicia_x < 0:
-        predkosc_odbicia_x = min(0, predkosc_odbicia_x + 1)
+        if predkosc_odbicia_x > 0:
+            predkosc_odbicia_x = max(0, predkosc_odbicia_x - 1)
+        elif predkosc_odbicia_x < 0:
+            predkosc_odbicia_x = min(0, predkosc_odbicia_x + 1)
 
-    gracz.zsynchronizuj_pozycje()
+        gracz.zsynchronizuj_pozycje()
 
-    predkosc_y = min(predkosc_y + GRAWITACJA, MAKS_PREDKOSC_SPADANIA)
-    gracz.prostokat.y += predkosc_y
-    for prostokat_podloza in prostokaty_podloza:
-        if gracz.prostokat.colliderect(prostokat_podloza):
-            if predkosc_y > 0:
-                gracz.prostokat.bottom = prostokat_podloza.top
-                predkosc_y = 0
-            elif predkosc_y < 0:
-                gracz.prostokat.top = prostokat_podloza.bottom
-                predkosc_y = 0
+        predkosc_y = min(predkosc_y + GRAWITACJA, MAKS_PREDKOSC_SPADANIA)
+        gracz.prostokat.y += predkosc_y
+        for prostokat_podloza in prostokaty_podloza:
+            if gracz.prostokat.colliderect(prostokat_podloza):
+                if predkosc_y > 0:
+                    gracz.prostokat.bottom = prostokat_podloza.top
+                    predkosc_y = 0
+                elif predkosc_y < 0:
+                    gracz.prostokat.top = prostokat_podloza.bottom
+                    predkosc_y = 0
 
     for woda in wody:
         if woda.STATE == "WALK" and KLATKA % 15 == 0:
@@ -173,7 +178,7 @@ while True:
     if na_podlozu and predkosc_y > 0:
         predkosc_y = 0
 
-    if gracz.STATE != "JUMP":
+    if gracz.STATE != "JUMP" and gracz.STATE != "SHOCK":
         gracz.STATE = "WALK" if ruch_x and na_podlozu else "IDLE"
 
     SCENA.fill((60, 160, 170))
@@ -219,7 +224,7 @@ while True:
             woda.rysuj(ANIMACJA_ENERGIA, SCENA, kamera_x, kamera_y)
         for pocisk in pociski:
             if woda.prostokat.colliderect(pocisk.prostokat):
-                if pocisk.moc == 20:
+                if pocisk.moc >= 20:
                     woda.WODNE_ZYCIA -= 2
                 else:
                     woda.WODNE_ZYCIA -= 1
@@ -272,7 +277,6 @@ while True:
         SCENA.blit(pygame.transform.scale_by(pygame.image.load(f"Phantom/assets/serca/SERCE_PUSTE.png"), 1/2), (70*i + 30, 30))
     for i in range(serca):
         SCENA.blit(pygame.transform.scale_by(pygame.image.load(f"Phantom/assets/serca/SERCE_PELNE.png"), 1/2), (70*i + 30, 30))
-
     if menu:
         SCENA.blit(pygame.image.load(f"Phantom/assets/MENU_USTAWIEN.png"), (36, 30))
         Przycisk_Jezyk.draw()
