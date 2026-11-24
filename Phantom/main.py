@@ -168,6 +168,22 @@ while True:
                             woda.KIERUNEK = "PRAWO"
                             woda.X += 5
                         woda.prostokat.topleft = (woda.X, woda.Y)
+        elif woda.STATE == "JUMP":
+            if woda.czy_dotyka_podloza():
+                woda.grawitacja = -20
+                woda.animacja = 1
+                if woda.czek == 0:
+                    woda.czek = 5
+                else:
+                    woda.czek -= 1
+            elif woda.grawitacja < 0:
+                woda.animacja = 2
+            else:
+                woda.animacja = 0
+            if woda.czek == 0:
+                woda.Y += woda.grawitacja
+                woda.grawitacja += 1
+            woda.prostokat.topleft = (woda.X, woda.Y)
 
     gracz.zsynchronizuj_pozycje()
 
@@ -222,6 +238,8 @@ while True:
                 woda.rysuj(ANIMACJA_ENERGIA - 2, SCENA, kamera_x, kamera_y)
         elif woda.STATE == "WALK":
             woda.rysuj(ANIMACJA_ENERGIA, SCENA, kamera_x, kamera_y)
+        elif woda.STATE == "JUMP":
+            woda.rysuj(woda.animacja, SCENA, kamera_x, kamera_y)
         for pocisk in pociski:
             if woda.prostokat.colliderect(pocisk.prostokat):
                 if pocisk.moc >= 20:
@@ -260,12 +278,12 @@ while True:
     SCENA.blit(pusty_pasek, (gracz.prostokat.left - kamera_x - 6, gracz.prostokat.y - kamera_y - 50))
     SCENA.blit(pygame.transform.scale_by(pygame.image.load(f"Phantom/assets/paski/PASEK_MOCY.png").subsurface(0, 0, moc if moc < 20 else 20, 3), 3), (gracz.prostokat.left - kamera_x - 3, gracz.prostokat.y - kamera_y - 47))
 
-    Tekst_Monety = pygwidgets.DisplayText(SCENA, loc=(80, 110), value = str(monety_liczba), fontName = f"Phantom/assets/ARCADECLASSIC.TTF", fontSize = 60, textColor=(186, 164, 20))
+    Tekst_Monety = pygwidgets.DisplayText(SCENA, loc=(80, 110), value = str(monety_liczba), fontName = f"Phantom/assets/monety/ARCADECLASSIC.TTF", fontSize = 60, textColor=(186, 164, 20))
     Tekst_Monety.show()
     Tekst_Monety.draw()
-    SCENA.blit(pygame.transform.scale_by(pygame.image.load(f"Phantom/assets/MONEY_COUNTER.png"), 2), (20, 120))
+    SCENA.blit(pygame.transform.scale_by(pygame.image.load(f"Phantom/assets/monety/MONEY_COUNTER.png"), 2), (20, 120))
 
-    SCENA.blit(pygame.image.load(f"Phantom/assets/RAMA_PRZYCISKOW.png"), (460, 15))
+    SCENA.blit(pygame.image.load(f"Phantom/assets/przyciski/RAMA_PRZYCISKOW.png"), (460, 15))
     Przycisk_Menu.draw()
     Przycisk_Wyjscie.draw()
     if fullscreen:
@@ -278,7 +296,7 @@ while True:
     for i in range(serca):
         SCENA.blit(pygame.transform.scale_by(pygame.image.load(f"Phantom/assets/serca/SERCE_PELNE.png"), 1/2), (70*i + 30, 30))
     if menu:
-        SCENA.blit(pygame.image.load(f"Phantom/assets/MENU_USTAWIEN.png"), (36, 30))
+        SCENA.blit(pygame.image.load(f"Phantom/assets/przyciski/MENU_USTAWIEN.png"), (36, 30))
         Przycisk_Jezyk.draw()
         Przycisk_Powrot.draw()
 

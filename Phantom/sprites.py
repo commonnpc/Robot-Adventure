@@ -16,6 +16,7 @@ class Sprite():
         self.KIERUNEK = KIERUNEK
         self.X = X
         self.Y = Y
+        self.czek = 0
         self.STANY = []
         if IDLE != None:
             self.IDLEan = podziel_klatki(IDLE[0], IDLE[1],  2.5 * WODA)
@@ -131,26 +132,28 @@ a = 0
 for znak in mapa:
     if znak == "G":
         if mapa[a - len(mapa.splitlines()[0]) - 1] != "G" or x == 0:
-            obiekty_podloza.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/GRASS.png"), 5)))
+            obiekty_podloza.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/budulce/GRASS.png"), 5)))
         else:
-            obiekty_podloza.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/DIRT.png"), 5)))
+            obiekty_podloza.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/budulce/DIRT.png"), 5)))
         prostokaty_podloza.append(obiekty_podloza[-1].prostokat)
     elif znak == "/":
         linia += 1
         x = a + 2
     elif znak == "S":
-        obiekty_podloza.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/STONE.png"), 5)))
+        obiekty_podloza.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/budulce/STONE.png"), 5)))
         prostokaty_podloza.append(obiekty_podloza[-1].prostokat)
     elif znak == "X":
         kolce.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/SPIKE.png"), 5)))
     elif znak == "E":
         energie.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/ENERGY.png"), 4)))
     elif znak == "M":
-        monety.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/MONEY.png"), 4)))
+        monety.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/monety/MONEY.png"), 4)))
     elif znak == "W":
-        wody.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/woda/WATER-IDLE.png"), 2), WALK = (pygame.image.load(f"Phantom/assets/woda/WATER-WALK.png"), 4), JUMP = (pygame.image.load(f"Phantom/assets/woda/WATER-JUMP.png"), 5), WODA = 5/4))
+        wody.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/woda/WATER-IDLE.png"), 2), WALK = (pygame.image.load(f"Phantom/assets/woda/WATER-WALK.png"), 4), JUMP = (pygame.image.load(f"Phantom/assets/woda/WATER-JUMP.png"), 3), WODA = 5/4))
     elif znak == "w":
-        wody.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/woda/WATER-IDLE.png"), 2), WALK = (pygame.image.load(f"Phantom/assets/woda/WATER-WALK.png"), 4), JUMP = (pygame.image.load(f"Phantom/assets/woda/WATER-JUMP.png"), 5), WODA = 5/4, STATE = "WALK"))
+        wody.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/woda/WATER-IDLE.png"), 2), WALK = (pygame.image.load(f"Phantom/assets/woda/WATER-WALK.png"), 4), JUMP = (pygame.image.load(f"Phantom/assets/woda/WATER-JUMP.png"), 3), WODA = 5/4, STATE = "WALK"))
+    elif znak == "q":
+        wody.append(Sprite((a - x) * 50, 50 * linia, IDLE = (pygame.image.load(f"Phantom/assets/woda/WATER-IDLE.png"), 2), WALK = (pygame.image.load(f"Phantom/assets/woda/WATER-WALK.png"), 4), JUMP = (pygame.image.load(f"Phantom/assets/woda/WATER-JUMP.png"), 3), WODA = 5/4, STATE = "JUMP"))
     a += 1
 
 
